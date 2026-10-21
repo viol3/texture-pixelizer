@@ -1,6 +1,6 @@
 {
   "name": "com.viol3.texturepixelizer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "displayName": "viol3's Texture Pixelizer",
   "description": "Editor tool that bakes a dithered pixel-art look into material textures. Non-destructive: the original texture is kept, the result is saved as <name>_pixelated.png.",
   "unity": "2022.3",
@@ -14,5 +14,6 @@
   ],
   "author": {
     "name": "viol3"
-  }
+  },
+  "license": "MIT"
 }

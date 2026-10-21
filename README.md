@@ -1,14 +1,18 @@
 # viol3's Texture Pixelizer
 
-**v0.0.2**
+**v0.0.3**
 
 A Unity editor tool that bakes a dithered pixel-art look into your materials' textures. You add a component to an object, tune the settings, press **Apply**, and get a new `<name>_pixelated.png` assigned to the material. Your original texture is never modified.
+
+Think of it as a free, open-source alternative to Puck's Pixelizer.
 
 It's built for retro / PSX-style 3D scenes, where tools that apply the same square pattern everywhere tend to look artificial. Here the tones come from the texture itself, so the dithering stays visible even on near-white or almost flat surfaces.
 
 | Before | After |
 |---|---|
 | ![Before](Documentation~/before.png) | ![After](Documentation~/after.png) |
+
+*Model in the screenshots by elbolilloduro (CC0).*
 
 ## Features
 
@@ -39,7 +43,7 @@ It's built for retro / PSX-style 3D scenes, where tools that apply the same squa
 https://github.com/viol3/texture-pixelizer.git
 ```
 
-To install a specific version, append a tag, e.g. `https://github.com/viol3/texture-pixelizer.git#v0.0.2`.
+To install a specific version, append a tag, e.g. `https://github.com/viol3/texture-pixelizer.git#v0.0.3`.
 
 **Option B – Copy into the project**
 
@@ -128,4 +132,4 @@ The **Reset Settings** button restores the defaults.
 
 ## License
 
-<!-- Choose a license (e.g. MIT) and add a LICENSE file to the repository. -->
+Released under the [MIT License](LICENSE.md). You're free to use it in personal and commercial projects, modify it and redistribute it, as long as you keep the copyright and license notice (i.e. credit viol3).
