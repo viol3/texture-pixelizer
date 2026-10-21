@@ -1,0 +1,14 @@
+{
+    "name": "Viol3.Pixelizer",
+    "rootNamespace": "Viol3.Pixelizer",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
