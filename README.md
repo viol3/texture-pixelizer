@@ -1,6 +1,6 @@
 # viol3's Texture Pixelizer
 
-**v0.0.4**
+**v0.0.5**
 
 A Unity editor tool that bakes a dithered pixel-art look into your materials' textures. You add a component to an object, tune the settings, press **Apply**, and get a new `<name>_pixelated.png` assigned to the material. Your original texture is never modified.
 
@@ -25,6 +25,7 @@ It's built for retro / PSX-style 3D scenes, where tools that apply the same squa
 - **Live preview** in the inspector before anything is written to disk.
 - **Multi-object editing.** Select several objects and apply them all at once.
 - **Undo support** for material changes.
+- **Scriptable.** A one-call C# API and a batch-mode entry point, so scripts and AI coding agents can pixelize whole prefabs or folders without opening the inspector. See [Scripting and AI agents](#scripting-and-ai-agents).
 
 ## Requirements
 
@@ -44,7 +45,7 @@ It's built for retro / PSX-style 3D scenes, where tools that apply the same squa
 https://github.com/viol3/texture-pixelizer.git
 ```
 
-To install a specific version, append a tag, e.g. `https://github.com/viol3/texture-pixelizer.git#v0.0.4`.
+To install a specific version, append a tag, e.g. `https://github.com/viol3/texture-pixelizer.git#v0.0.5`.
 
 **Option B – Copy into the project**
 
@@ -124,6 +125,34 @@ The **Reset Settings** button restores the defaults.
 - **For a more hand-made look:** use `BlueNoise`, or raise **Pattern Randomness**.
 - **To limit colors as well:** switch to `Adaptive Palette` with 8–16 colors.
 
+## Scripting and AI agents
+
+Everything the inspector does is also available from code, through `Viol3.Pixelizer.Editor.PixelizerApi` (editor only):
+
+```csharp
+using Viol3.Pixelizer;
+using Viol3.Pixelizer.Editor;
+
+// A texture, material, prefab/model or a whole folder:
+PixelizerApi.PixelizeAsset("Assets/Environment", PixelizePresets.Create(PixelizePreset.Strong));
+
+// Scene objects or prefabs, including children:
+PixelizerApi.PixelizeGameObject(myObject);
+
+// Undo it:
+PixelizerApi.RevertAsset("Assets/Environment");
+```
+
+Presets: `Default`, `Subtle`, `Strong`, `Chunky`, `Organic`, `LimitedPalette`.
+
+It also runs from the command line, with the Unity window closed:
+
+```bash
+Unity -batchmode -quit -projectPath <project> -logFile -   -executeMethod Viol3.Pixelizer.Editor.PixelizerApi.PixelizeFromCommandLine   -pixelizeTargets "Assets/Models/Tree.prefab;Assets/Environment"   -pixelizePreset Strong -pixelizeSettings "pixelSize=6,ditherMode=BlueNoise"
+```
+
+**Using an AI coding assistant?** Point it at [AGENTS.md](AGENTS.md). It covers installing the package by editing `Packages/manifest.json`, the full API, ready-made recipes, and which setting matches which request ("bigger pixels", "less grid-like", ...).
+
 ## Notes and limitations
 
 - **Needs a UV-mapped texture.** The tool processes the texture assigned to the material, so the model must be UV-unwrapped and use a real image texture. It does nothing for:
@@ -133,7 +162,7 @@ The **Reset Settings** button restores the defaults.
 - **Shared materials:** The tool edits the material asset, so every object using that material shows the pixelated texture. The inspector warns you when this is the case.
 - **Shared source textures:** Objects that use the same source texture write to the same `_pixelated.png` file, so the last Apply wins.
 - **Materials embedded in a model file** (FBX, etc.) are read-only. Extract them first: select the model, then *Import Settings → Materials → Extract Materials*.
-- **Editor-time only:** Processing happens in the editor. Nothing runs at runtime, and the component itself has no cost in builds.
+- **Editor-time only:** Processing happens in the editor (including `PixelizerApi`). Nothing runs at runtime, and the component itself has no cost in builds.
 
 ## License
 

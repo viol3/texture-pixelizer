@@ -49,7 +49,15 @@ namespace Viol3.Pixelizer.Editor
         public static Texture2D FindSourceTexture(TexturePixelizer pixelizer, Material material, string property)
         {
             if (pixelizer.sourceTexture != null) return pixelizer.sourceTexture;
+            return FindSourceTexture(material, property);
+        }
 
+        /// <summary>
+        /// The material's current texture, or, if that is a _pixelated output, the original it was made from
+        /// (looked up by name in the same folder).
+        /// </summary>
+        public static Texture2D FindSourceTexture(Material material, string property)
+        {
             var current = material.GetTexture(property) as Texture2D;
             if (current == null || !current.name.EndsWith(Suffix)) return current;
 
@@ -151,35 +159,59 @@ namespace Viol3.Pixelizer.Editor
                 return false;
             }
 
+            Undo.RecordObject(pixelizer, "Apply Texture Pixelizer");
+            if (!ApplyToMaterial(material, property, source, pixelizer.settings, out Texture2D pixelated, out message))
+                return false;
+
+            pixelizer.sourceTexture = source;
+            pixelizer.pixelatedTexture = pixelated;
+            EditorUtility.SetDirty(pixelizer);
+            return true;
+        }
+
+        /// <summary>Pixelates <paramref name="source"/> and assigns the result to <paramref name="material"/>.<paramref name="property"/>.</summary>
+        public static bool ApplyToMaterial(Material material, string property, Texture2D source, PixelizeSettings settings,
+                                           out Texture2D pixelated, out string message)
+        {
+            if (!PixelizeTextureAsset(source, settings, out pixelated, out message)) return false;
+
+            Undo.RecordObject(material, "Apply Texture Pixelizer");
+            material.SetTexture(property, pixelated);
+            EditorUtility.SetDirty(material);
+            return true;
+        }
+
+        /// <summary>Pixelates <paramref name="source"/> and saves it as [name]_pixelated.png. Does not touch any material.</summary>
+        public static bool PixelizeTextureAsset(Texture2D source, PixelizeSettings settings,
+                                                out Texture2D pixelated, out string message)
+        {
+            pixelated = null;
+            if (source == null)
+            {
+                message = "Source texture is null.";
+                return false;
+            }
+
             try
             {
-                EditorUtility.DisplayProgressBar("Texture Pixelizer", $"Processing {source.name}...", 0.3f);
+                if (!Application.isBatchMode)
+                    EditorUtility.DisplayProgressBar("Texture Pixelizer", $"Processing {source.name}...", 0.3f);
 
                 Color32[] pixels = ReadPixels(source, out bool isSRGB);
-                Color32[] result = PixelizeProcessor.Process(pixels, source.width, source.height, pixelizer.settings,
+                Color32[] result = PixelizeProcessor.Process(pixels, source.width, source.height, settings,
                     out int width, out int height, out _);
-
-                EditorUtility.DisplayProgressBar("Texture Pixelizer", $"Saving {source.name}{Suffix}...", 0.8f);
 
                 string outputPath = GetOutputPath(source);
                 WritePng(outputPath, result, width, height, isSRGB);
-                ConfigureImporter(outputPath, source, pixelizer.settings, isSRGB, width, height);
+                ConfigureImporter(outputPath, source, settings, isSRGB, width, height);
 
-                var pixelated = AssetDatabase.LoadAssetAtPath<Texture2D>(outputPath);
-
-                Undo.RecordObjects(new Object[] { material, pixelizer }, "Apply Texture Pixelizer");
-                pixelizer.sourceTexture = source;
-                pixelizer.pixelatedTexture = pixelated;
-                material.SetTexture(property, pixelated);
-                EditorUtility.SetDirty(material);
-                EditorUtility.SetDirty(pixelizer);
-
+                pixelated = AssetDatabase.LoadAssetAtPath<Texture2D>(outputPath);
                 message = $"Saved {outputPath} ({width}x{height}).";
-                return true;
+                return pixelated != null;
             }
             finally
             {
-                EditorUtility.ClearProgressBar();
+                if (!Application.isBatchMode) EditorUtility.ClearProgressBar();
             }
         }
 

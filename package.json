@@ -1,8 +1,8 @@
 {
   "name": "com.viol3.texturepixelizer",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "displayName": "viol3's Texture Pixelizer",
-  "description": "Editor tool that bakes a dithered pixel-art look into material textures. Non-destructive: the original texture is kept, the result is saved as <name>_pixelated.png.",
+  "description": "Editor tool that bakes a dithered pixel-art look into material textures. Non-destructive: the original texture is kept, the result is saved as <name>_pixelated.png. Fully scriptable: one-call C# API (PixelizerApi) and a batch-mode entry point, so it can be driven by scripts and AI coding agents. See AGENTS.md.",
   "unity": "2022.3",
   "keywords": [
     "pixel art",
@@ -10,10 +10,14 @@
     "texture",
     "retro",
     "psx",
-    "editor"
+    "editor",
+    "dither",
+    "scriptable",
+    "automation"
   ],
   "author": {
     "name": "viol3"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "documentationUrl": "https://github.com/viol3/texture-pixelizer#readme"
 }

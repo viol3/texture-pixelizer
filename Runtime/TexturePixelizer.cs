@@ -100,7 +100,7 @@ namespace Viol3.Pixelizer
     public class TexturePixelizer : MonoBehaviour
     {
         public const string DisplayName = "viol3's Texture Pixelizer";
-        public const string Version = "0.0.4";
+        public const string Version = "0.0.5";
 
         [Tooltip("Index in the renderer's material list.")]
         public int materialIndex = 0;
