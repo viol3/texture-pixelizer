@@ -1,6 +1,6 @@
 # viol3's Texture Pixelizer
 
-**v0.0.1**
+**v0.0.2**
 
 A Unity editor tool that bakes a dithered pixel-art look into your materials' textures. You add a component to an object, tune the settings, press **Apply**, and get a new `<name>_pixelated.png` assigned to the material. Your original texture is never modified.
 
@@ -39,7 +39,7 @@ It's built for retro / PSX-style 3D scenes, where tools that apply the same squa
 https://github.com/viol3/texture-pixelizer.git
 ```
 
-To install a specific version, append a tag, e.g. `https://github.com/viol3/texture-pixelizer.git#v0.0.1`.
+To install a specific version, append a tag, e.g. `https://github.com/viol3/texture-pixelizer.git#v0.0.2`.
 
 **Option B – Copy into the project**
 
