@@ -1,6 +1,6 @@
 # viol3's Texture Pixelizer
 
-**v0.0.3**
+**v0.0.4**
 
 A Unity editor tool that bakes a dithered pixel-art look into your materials' textures. You add a component to an object, tune the settings, press **Apply**, and get a new `<name>_pixelated.png` assigned to the material. Your original texture is never modified.
 
@@ -29,6 +29,7 @@ It's built for retro / PSX-style 3D scenes, where tools that apply the same squa
 ## Requirements
 
 - Unity 2022.3 or newer (developed and tested on Unity 6).
+- A UV-mapped model with an image texture on its material. Flat-color materials, vertex colors and palette atlas textures are not supported (see [Notes and limitations](#notes-and-limitations)).
 - Works with any render pipeline. The main texture is detected automatically (`[MainTexture]`, `_BaseMap` or `_MainTex`).
 
 ## Installation
@@ -43,7 +44,7 @@ It's built for retro / PSX-style 3D scenes, where tools that apply the same squa
 https://github.com/viol3/texture-pixelizer.git
 ```
 
-To install a specific version, append a tag, e.g. `https://github.com/viol3/texture-pixelizer.git#v0.0.3`.
+To install a specific version, append a tag, e.g. `https://github.com/viol3/texture-pixelizer.git#v0.0.4`.
 
 **Option B – Copy into the project**
 
@@ -125,6 +126,10 @@ The **Reset Settings** button restores the defaults.
 
 ## Notes and limitations
 
+- **Needs a UV-mapped texture.** The tool processes the texture assigned to the material, so the model must be UV-unwrapped and use a real image texture. It does nothing for:
+  - materials that only use a flat color (no texture),
+  - vertex-colored models,
+  - small palette/gradient atlas textures where each face maps to a single color cell. There are no tones inside a cell to dither, so faces stay flat.
 - **Shared materials:** The tool edits the material asset, so every object using that material shows the pixelated texture. The inspector warns you when this is the case.
 - **Shared source textures:** Objects that use the same source texture write to the same `_pixelated.png` file, so the last Apply wins.
 - **Materials embedded in a model file** (FBX, etc.) are read-only. Extract them first: select the model, then *Import Settings → Materials → Extract Materials*.
