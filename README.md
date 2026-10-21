@@ -6,6 +6,10 @@ A Unity editor tool that bakes a dithered pixel-art look into your materials' te
 
 It's built for retro / PSX-style 3D scenes, where tools that apply the same square pattern everywhere tend to look artificial. Here the tones come from the texture itself, so the dithering stays visible even on near-white or almost flat surfaces.
 
+| Before | After |
+|---|---|
+| ![Before](Documentation~/before.png) | ![After](Documentation~/after.png) |
+
 ## Features
 
 - **Non-destructive.** The source texture is stored on the component, and every Apply starts from it again, so you can keep re-tuning.
