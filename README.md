@@ -127,7 +127,11 @@ The **Reset Settings** button restores the defaults.
 
 ## Scripting and AI agents
 
-Everything the inspector does is also available from code, through `Viol3.Pixelizer.Editor.PixelizerApi` (editor only):
+Everything the inspector does is also available from code, so scripts and AI coding agents (Claude Code, Cursor, Copilot, Codex, ...) can use the tool without clicking anything in Unity. This is an extra option. The inspector workflow above works exactly the same.
+
+### Using from code
+
+The entry point is `Viol3.Pixelizer.Editor.PixelizerApi` (editor only):
 
 ```csharp
 using Viol3.Pixelizer;
@@ -139,19 +143,47 @@ PixelizerApi.PixelizeAsset("Assets/Environment", PixelizePresets.Create(Pixelize
 // Scene objects or prefabs, including children:
 PixelizerApi.PixelizeGameObject(myObject);
 
+// Add the component so it can be fine-tuned later in the inspector:
+PixelizerApi.AddPixelizerComponent(myObject, PixelizePresets.Create(PixelizePreset.Organic));
+
 // Undo it:
 PixelizerApi.RevertAsset("Assets/Environment");
 ```
 
 Presets: `Default`, `Subtle`, `Strong`, `Chunky`, `Organic`, `LimitedPalette`.
 
-It also runs from the command line, with the Unity window closed:
+### Command line (Unity window closed)
 
 ```bash
-Unity -batchmode -quit -projectPath <project> -logFile -   -executeMethod Viol3.Pixelizer.Editor.PixelizerApi.PixelizeFromCommandLine   -pixelizeTargets "Assets/Models/Tree.prefab;Assets/Environment"   -pixelizePreset Strong -pixelizeSettings "pixelSize=6,ditherMode=BlueNoise"
+Unity -batchmode -quit -projectPath <project> -logFile - \
+  -executeMethod Viol3.Pixelizer.Editor.PixelizerApi.PixelizeFromCommandLine \
+  -pixelizeTargets "Assets/Models/Tree.prefab;Assets/Environment" \
+  -pixelizePreset Strong \
+  -pixelizeSettings "pixelSize=6,ditherMode=BlueNoise"
 ```
 
-**Using an AI coding assistant?** Point it at [AGENTS.md](AGENTS.md). It covers installing the package by editing `Packages/manifest.json`, the full API, ready-made recipes, and which setting matches which request ("bigger pixels", "less grid-like", ...).
+Add `-pixelizeRevert` to revert. Every result is logged as `[Texture Pixelizer] <target>: OK | SKIPPED | FAILED: <message>`. The exit code is `1` if anything failed.
+
+### Instructions for AI agents
+
+If you are an AI agent and the user wants a pixel-art, dithered, retro or PS1/PSX look on their 3D models, you can install and run this package yourself:
+
+1. **Install.** Add this line to `dependencies` in `Packages/manifest.json`:
+   ```json
+   "com.viol3.texturepixelizer": "https://github.com/viol3/texture-pixelizer.git#v0.0.5"
+   ```
+2. **Run it**, in one of two ways:
+   - *User has Unity open:* create an editor script in `Assets/Editor/` with a `[MenuItem]` that calls `PixelizerApi.PixelizeAsset(...)`, and tell the user which menu item to click.
+   - *Fully automatic:* make sure Unity is **not** open on the project, then run the command line above. Do **not** add `-nographics`, because reading textures needs a GPU device. The Unity version is in `ProjectSettings/ProjectVersion.txt`, and editors are usually in `C:\Program Files\Unity\Hub\Editor\<version>\Editor\Unity.exe` (Windows) or `/Applications/Unity/Hub/Editor/<version>/Unity.app/Contents/MacOS/Unity` (macOS).
+3. **Pick settings from what the user says.** Start with a preset, then change fields, e.g. "bigger pixels" → `pixelSize` up; "can't see the dithering" → `toneBands=3`, `ditherStrength=1`; "less grid-like" → `ditherMode=BlueNoise`; "fewer colors" → `colorMode=AdaptivePalette`, `paletteSize=16`.
+4. **Check the results.** Each call returns `PixelizeResult` objects. `Success` = done. `Skipped` = nothing to do (e.g. a flat-color material), which is not an error. Otherwise read `Message`.
+5. **Mind the rules:**
+   - `PixelizerApi` is editor-only. Never call it from game code that runs in play mode or in a build.
+   - Materials embedded in FBX/OBJ files are read-only. Extract them first (see [Notes and limitations](#notes-and-limitations)).
+   - Changing a shared material changes every object that uses it. Tell the user.
+   - Original textures are never modified, and running again with new settings always starts from the original.
+
+The full reference for agents (all API methods, every setting with its range, more recipes) is in **[AGENTS.md](AGENTS.md)**.
 
 ## Notes and limitations
 
